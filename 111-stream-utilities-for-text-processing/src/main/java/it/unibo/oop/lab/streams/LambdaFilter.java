@@ -17,6 +17,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 /**
  * Modify this small program adding new filters.
  * Realize this exercise using as much as possible the Stream library.
@@ -44,8 +47,10 @@ public final class LambdaFilter extends JFrame {
         IDENTITY("No modifications", Function.identity()),
         LOWERCASE("Convert to lowercase", String::toLowerCase),
         NUM_CHARS("Count the number of chars", s -> String.valueOf(s.chars().count())),
-        NUM_LINES("Count the number of lines", s -> String.valueOf(s.lines().count()));
-        //ALPH_ORDER("List all the words in alphabetical order", Function.identity()),
+        NUM_LINES("Count the number of lines", s -> String.valueOf(s.lines().count())),
+        ALPH_ORDER("List all the words in alphabetical order", s -> Stream.of(s.split(" |\n"))
+                                                                        .sorted()
+                                                                        .collect(Collectors.joining(" |\n")));
         //COUNT_WORD("Write the count for each word", Function.identity());
 
         private final String commandName;
