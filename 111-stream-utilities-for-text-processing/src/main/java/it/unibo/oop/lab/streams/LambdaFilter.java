@@ -49,7 +49,7 @@ public final class LambdaFilter extends JFrame {
         NUM_CHARS("Count the number of chars", s -> String.valueOf(s.chars().count())),
         NUM_LINES("Count the number of lines", s -> String.valueOf(s.lines().count())),
         ALPH_ORDER("List all the words in alphabetical order", s -> Stream.of(s.split(" |\n"))
-                                                                        .sorted()
+                                                                        .sorted(String.CASE_INSENSITIVE_ORDER)
                                                                         .collect(Collectors.joining(" |\n")));
         //COUNT_WORD("Write the count for each word", Function.identity());
 
