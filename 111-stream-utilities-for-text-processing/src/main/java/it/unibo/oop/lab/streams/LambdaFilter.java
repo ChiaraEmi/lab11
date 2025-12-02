@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.Toolkit;
 import java.io.Serial;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -39,6 +40,7 @@ public final class LambdaFilter extends JFrame {
 
     @Serial
     private static final long serialVersionUID = 1760990730218643730L;
+    private static final String DELIMITER = " |\n";
 
     private enum Command {
         /**
@@ -48,10 +50,20 @@ public final class LambdaFilter extends JFrame {
         LOWERCASE("Convert to lowercase", String::toLowerCase),
         NUM_CHARS("Count the number of chars", s -> String.valueOf(s.chars().count())),
         NUM_LINES("Count the number of lines", s -> String.valueOf(s.lines().count())),
-        ALPH_ORDER("List all the words in alphabetical order", s -> Stream.of(s.split(" |\n"))
-                                                                        .sorted(String.CASE_INSENSITIVE_ORDER)
-                                                                        .collect(Collectors.joining(" |\n")));
-        //COUNT_WORD("Write the count for each word", Function.identity());
+        ALPH_ORDER("List all the words in alphabetical order", s -> Stream.of(s.split(DELIMITER))
+                                                                            .sorted(String.CASE_INSENSITIVE_ORDER)
+                                                                            .collect(Collectors.joining(DELIMITER))),
+        COUNT_WORD("Write the count for each word", s -> Stream.of(s.split(DELIMITER))
+                                                                .collect(Collectors.groupingBy(
+                                                                    Function.identity(),
+                                                                    Collectors.counting()
+                                                                ))
+                                                                .entrySet()
+                                                                .stream()
+                                                                .sorted(Map.Entry.comparingByKey(String.CASE_INSENSITIVE_ORDER))
+                                                                .map(w -> w.getKey() + " -> " + w.getValue())
+                                                                .collect(Collectors.joining("\n"))
+        );
 
         private final String commandName;
         private final Function<String, String> fun;
