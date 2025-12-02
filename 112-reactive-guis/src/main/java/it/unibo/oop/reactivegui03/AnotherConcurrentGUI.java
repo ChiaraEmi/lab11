@@ -22,6 +22,7 @@ public final class AnotherConcurrentGUI extends JFrame {
     @Serial
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = LoggerFactory.getLogger(AnotherConcurrentGUI.class);
+    private static final int SLEEP = 10_000;
     private final JLabel display = new JLabel();
 
     /**
@@ -41,23 +42,29 @@ public final class AnotherConcurrentGUI extends JFrame {
         this.getContentPane().add(panel);
         this.setVisible(true);
 
-        /*
-         * Create the counter agent and start it. This is actually not so good:
-         * thread management should be left to
-         * java.util.concurrent.ExecutorService
-         */
         final Agent agent = new Agent();
         new Thread(agent).start();
-        /*
-         * Register a listener that stops it
-         */
+        new Thread(() -> {
+            try {
+                Thread.sleep(SLEEP);
+                SwingUtilities.invokeAndWait(() -> {
+                    up.setEnabled(false);
+                    down.setEnabled(false);
+                    stop.setEnabled(false);
+                });
+                agent.stopCounting();
+            } catch (InvocationTargetException | InterruptedException ex) {
+                LOGGER.error(ex.getMessage(), ex);
+            }
+        }).start();
+
         up.addActionListener(e -> agent.setUp());
         down.addActionListener(e -> agent.setDown());
         stop.addActionListener(e -> {
             agent.stopCounting();
-            up.setEnabled(true);
-            down.setEnabled(true);
-            stop.setEnabled(true);
+            up.setEnabled(false);
+            down.setEnabled(false);
+            stop.setEnabled(false);
         });
     }
 
