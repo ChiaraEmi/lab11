@@ -41,23 +41,16 @@ public final class ConcurrentGUI extends JFrame {
         this.getContentPane().add(panel);
         this.setVisible(true);
 
-        /*
-         * Create the counter agent and start it. This is actually not so good:
-         * thread management should be left to
-         * java.util.concurrent.ExecutorService
-         */
         final Agent agent = new Agent();
         new Thread(agent).start();
-        /*
-         * Register a listener that stops it
-         */
+
         up.addActionListener(e -> agent.setUp());
         down.addActionListener(e -> agent.setDown());
         stop.addActionListener(e -> {
             agent.stopCounting();
-            up.setEnabled(true);
-            down.setEnabled(true);
-            stop.setEnabled(true);
+            up.setEnabled(false);
+            down.setEnabled(false);
+            stop.setEnabled(false);
         });
     }
 
